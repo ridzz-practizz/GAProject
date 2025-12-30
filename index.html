@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ridhi's Merch Store</title>
+  <style>
+    :root{
+      --bg:#0f172a;         
+      --text:#e2e8f0;      
+      --muted:#94a3b8;      
+      --card:#111827;       
+      --brand:#22c55e;      
+      --brand-2:#06b6d4;    
+      --accent:#f59e0b;     
+      --danger:#ef4444;     
+      --border:#1f2937;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:50;
+      background:rgba(15,23,42,.7);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav{
+      max-width:1100px;margin:0 auto;padding:12px 16px;
+      display:flex;align-items:center;gap:16px;justify-content:space-between;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.3px}
+    .brand .logo{
+      width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      display:grid;place-items:center;color:#0b1220;font-weight:900
+    }
+    .nav-links{display:flex;gap:18px}
+    .nav-links a{color:var(--muted)}
+    .nav-actions{display:flex;gap:8px;align-items:center}
+    .btn{
+      padding:10px 14px;border-radius:10px;border:1px solid var(--border);
+      background:var(--card);color:var(--text);cursor:pointer
+    }
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#041018;border:none}
+    .cart-indicator{position:relative}
+    .cart-count{
+      position:absolute;top:-6px;right:-6px;background:var(--accent);color:#111827;
+      font-size:12px;border-radius:999px;padding:2px 6px;border:1px solid #111827
+    }
+
+    /* Hero */
+    .hero{
+      max-width:1100px;margin:0 auto;padding:40px 16px 24px;
+      display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center
+    }
+    .hero h1{font-size:40px;line-height:1.1;margin:0 0 10px}
+    .hero p{color:var(--muted);margin:0 0 16px}
+    .hero .cta{display:flex;gap:10px;flex-wrap:wrap}
+    .hero-card{
+      background:radial-gradient(1200px 600px at 100% 0%,rgba(34,197,94,.25),transparent 35%),
+                 radial-gradient(1000px 500px at 0% 100%,rgba(6,182,212,.25),transparent 35%),
+                 var(--card);
+      border:1px solid var(--border);border-radius:16px;padding:18px
+    }
+    .hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .pill{
+      background:#0c1428;border:1px solid var(--border);border-radius:12px;padding:8px 10px;
+      display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px
+    }
+
+    /* Filters */
+    .filters{
+      max-width:1100px;margin:26px auto 10px;padding:0 16px;
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap
+    }
+    .input, .select{
+      background:var(--card);border:1px solid var(--border);color:var(--text);
+      padding:10px 12px;border-radius:10px
+    }
+    .input{min-width:240px}
+    .chip{
+      padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#0c1428;color:var(--muted);cursor:pointer
+    }
+    .chip.active{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#041018;border:none}
+
+    /* Shop grid */
+    .shop{
+      max-width:1100px;margin:0 auto;padding:10px 16px 70px
+    }
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    @media (max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}}
+    @media (max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:480px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column
+    }
+    .card .media{aspect-ratio:1/1;background:#0c1428;display:grid;place-items:center;color:var(--muted);font-size:13px}
+    .card .body{padding:12px}
+    .title{font-weight:600;margin:0 0 6px}
+    .price{color:var(--text);font-weight:700}
+    .sub{color:var(--muted);font-size:13px}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .btn.sm{padding:8px 10px;border-radius:8px}
+    .btn.outline{background:transparent;border:1px dashed var(--border);color:var(--muted)}
+
+    /* Cart drawer */
+    .drawer{
+      position:fixed;right:16px;bottom:16px;width:340px;max-width:92vw;
+      background:var(--card);border:1px solid var(--border);border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden;display:none;flex-direction:column
+    }
+    .drawer.open{display:flex}
+    .drawer header{position:static;background:transparent;border-bottom:1px solid var(--border)}
+    .drawer .content{padding:12px;display:flex;flex-direction:column;gap:10px;max-height:50vh;overflow:auto}
+    .line{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .qty{display:flex;align-items:center;gap:6px}
+    .qty button{width:24px;height:24px;border-radius:8px;border:1px solid var(--border);background:#0c1428;color:var(--text);cursor:pointer}
+    .drawer footer{padding:12px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .total{font-weight:800}
+    .muted{color:var(--muted)}
+    .link{color:var(--brand-2);text-decoration:underline;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">R</div>
+        <span>Ridhi's Merch</span>
+      </div>
+      <div class="nav-links">
+        #homeHome</a>
+        #shopShop</a>
+        #aboutAbout</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn outline" id="toggleTheme">Theme</button>
+        <div class="cart-indicator">
+          <button class="btn" id="openCart">Cart</button>
+          <span class="cart-count" id="cartCount">0</span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div>
+      <h1>Wear your story.</h1>
+      <p>Minimal designs. Maximum comfort. Beanies, caps, hoodies, tees, watches, and stickers—all in one place.</p>
+      <div class="cta">
+        #ShopNow</a>
+        #aboutLearn</a>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill">Free shipping over ₹999</span>
+        <span class="pill">Easy 7‑day returns</span>
+        <span class="pill">Secure checkout</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-grid">
+        <div class="pill">🧢 Caps</div>
+        <div class="pill">🧣 Beanies</div>
+        <div class="pill">🧥 Hoodies</div>
+        <div class="pill">👕 T‑shirts</div>
+        <div class="pill">⌚ Watches</div>
+        <div class="pill">💡 Stickers</div>
+      </div>
+      <div style="margin-top:12px" class="muted">Featured drops updated weekly.</div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <section class="filters">
+    <input type="search" id="searchInput" class="input" placeholder="Search (e.g., 'hoodie', 'cap', 'black')" />
+    <select id="categorySelect" class="select">
+      <option value="all">All Categories</option>
+      <option value="beanie">Beanie</option>
+      <option value="cap">Cap</option>
+      <option value="hoodie">Hoodie</option>
+      <option value="tshirt">T-shirt</option>
+      <option value="watch">Watch</option>
+      <option value="sticker">Sticker</option>
+    </select>
+    <button class="chip" data-chip="new">New</button>
+    <button class="chip" data-chip="sale">On Sale</button>
+    <button class="chip" data-chip="popular">Popular</button>
+    <button class="chip" id="clearFilters">Clear</button>
+  </section>
+
+  <!-- SHOP GRID -->
+  <section class="shop" id="shop">
+    <div class="grid" id="productGrid"></div>
+  </section>
+
+  <!-- CART DRAWER -->
+  <aside class="drawer" id="cartDrawer" aria-label="Shopping cart">
+    <header class="nav">
+      <div class="brand"><div class="logo">🛒</div><span>Cart</span></div>
+      <button class="btn" id="closeCart">Close</button>
+    </header>
+    <div class="content" id="cartItems"></div>
+    <footer>
+      <div>
+        <div class="muted">Subtotal</div>
+        <div class="total" id="cartTotal">₹0</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn outline" id="clearCart">Clear</button>
+        <button class="btn primary" id="checkoutBtn">Checkout</button>
+      </div>
+    </footer>
+  </aside>
+  </section>
+
+  <script>
+    // ----------------------------
+    // Catalog 
+    // ----------------------------
+    const PRODUCTS = [
+      { id:"beanie-black", name:"Beanie - Black", category:"beanie", price:499, tags:["new","popular"], color:"black", img:"https://placehold.co/600x600?text=Beanie+Black" },
+      { id:"beanie-gray",  name:"Beanie - Gray",  category:"beanie", price:499, tags:["sale"],         color:"gray",  img:"https://placehold.co/600x600?text=Beanie+Gray" },
+      { id:"cap-classic",  name:"Cap - Classic",  category:"cap",    price:699, tags:["popular"],      color:"navy",  img:"https://placehold.co/600x600?text=Cap+Classic" },
+      { id:"hoodie-zip",   name:"Hoodie - Zip",   category:"hoodie", price:1799,tags:["new"],          color:"black", img:"https://placehold.co/600x600?text=Hoodie+Zip" },
+      { id:"hoodie-overs", name:"Hoodie - Oversized",category:"hoodie", price:1999, tags:["sale"],     color:"cream", img:"https://placehold.co/600x600?text=Hoodie+Oversize" },
+      { id:"tshirt-basic", name:"T-shirt - Basic",category:"tshirt", price:599, tags:["popular"],      color:"white", img:"https://placehold.co/600x600?text=T-shirt+Basic" },
+      { id:"tshirt-graphic",name:"T-shirt - Graphic",category:"tshirt", price:799,tags:["new"],        color:"black", img:"https://placehold.co/600x600?text=T-shirt+Graphic" },
+      { id:"watch-min",    name:"Watch - Minimal",category:"watch",  price:2499,tags:["popular"],      color:"black", img:"https://placehold.co/600x600?text=Watch+Minimal" },
+      { id:"sticker-pack", name:"Sticker Pack (12)",category:"sticker",price:199,tags:["sale"],        color:"multi", img:"https://placehold.co/600x600?text=Sticker+Pack" },
+      { id:"cap-sport",    name:"Cap - Sport",    category:"cap",    price:799, tags:["new"],          color:"black", img:"https://placehold.co/600x600?text=Cap+Sport" },
+    ];
+
+    // ----------------------------
+    // State
+    // ----------------------------
+    const state = {
+      q: "", category: "all", chip: null,
+      cart: JSON.parse(localStorage.getItem("cart")||"{}") // { productId: qty }
+    };
+
+    const fmtINR = v => "₹" + v.toLocaleString("en-IN");
+
+    // ----------------------------
+    // Render products
+    // ----------------------------
+    const grid = document.getElementById("productGrid");
+    function renderProducts(){
+      const search = state.q.trim().toLowerCase();
+      const list = PRODUCTS.filter(p=>{
+        const matchesCat = state.category==="all" ? true : p.category===state.category;
+        const matchesChip = state.chip ? p.tags.includes(state.chip) : true;
+        const matchesSearch = !search ? true :
+          [p.name, p.category, p.color].some(x=>String(x).toLowerCase().includes(search));
+        return matchesCat && matchesChip && matchesSearch;
+      });
+
+      grid.innerHTML = list.map(p=>`
+        <article class="card" aria-label="${p.name}">
+          <div class="media">
+            ${p.img}
+          </div>
+          <div class="body">
+            <h3 class="title">${p.name}</h3>
+            <div class="sub">Category: ${p.category} • Color: ${p.color}</div>
+            <div class="line" style="margin-top:8px">
+              <span class="price">${fmtINR(p.price)}</span>
+              <span class="muted">${p.tags.map(t=>"#"+t).join(" ")}</span>
+            </div>
+            <div class="actions">
+              <button class="btn sm primary" onclick="addToCart('${p.id}')">Add to Cart</button>
+              <button class="btn sm outline" onclick="viewItem('${p.id}')">View</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      updateCartIndicator();
+    }
+
+    // ----------------------------
+    // Cart logic
+    // ----------------------------
+    function addToCart(id){
+      state.cart[id] = (state.cart[id]||0) + 1;
+      persistCart();
+      renderCart();
+      openCart();
+    }
+    function removeFromCart(id){
+      if(!state.cart[id]) return;
+      state.cart[id] -= 1;
+      if(state.cart[id] <= 0) delete state.cart[id];
+      persistCart();
+      renderCart();
+    }
+    function deleteFromCart(id){
+      delete state.cart[id];
+      persistCart();
+      renderCart();
+    }
+    function clearCart(){
+      state.cart = {};
+      persistCart();
+      renderCart();
+    }
+    function persistCart(){
+      localStorage.setItem("cart", JSON.stringify(state.cart));
+      updateCartIndicator();
+    }
+    function cartItemsArray(){
+      return Object.entries(state.cart).map(([id,qty])=>{
+        const p = PRODUCTS.find(x=>x.id===id);
+        return { ...p, qty, lineTotal: p.price * qty };
+      });
+    }
+    function cartTotal(){
+      return cartItemsArray().reduce((sum,it)=>sum+it.lineTotal,0);
+    }
+    function updateCartIndicator(){
+      const count = Object.values(state.cart).reduce((a,b)=>a+b,0);
+      document.getElementById("cartCount").textContent = count;
+    }
+
+    // ----------------------------
+    // Render cart drawer
+    // ----------------------------
+    const drawer = document.getElementById("cartDrawer");
+    const cartItemsEl = document.getElementById("cartItems");
+    const cartTotalEl = document.getElementById("cartTotal");
+
+    function renderCart(){
+      const items = cartItemsArray();
+      if(items.length===0){
+        cartItemsEl.innerHTML = `<div class="muted">Your cart is empty.</div>`;
+        cartTotalEl.textContent = fmtINR(0);
+        return;
+      }
+      cartItemsEl.innerHTML = items.map(it=>`
+        <div class="line">
+          <div>
+            <div style="font-weight:600">${it.name}</div>
+            <div class="muted">${fmtINR(it.price)} • ${it.category}</div>
+          </div>
+          <div class="qty">
+            <button onclick="removeFromCart('${it.id}')">−</button>
+            <span>${it.qty}</span>
+            <button onclick="addToCart('${it.id}')">+</button>
+            <button class="btn sm" style="margin-left:6px;background:${'linear-gradient(135deg, '+getComputedStyle(document.documentElement).getPropertyValue('--danger')+', #b91c1c)'};color:#fff;border:none" onclick="deleteFromCart('${it.id}')">Remove</button>
+          </div>
+          <div style="min-width:80px;text-align:right">${fmtINR(it.lineTotal)}</div>
+        </div>
+      `).join("");
+      cartTotalEl.textContent = fmtINR(cartTotal());
+    }
+
+    function openCart(){ drawer.classList.add("open"); }
+    function closeCart(){ drawer.classList.remove("open"); }
+
+    // ----------------------------
+    // Filters wiring
+    // ----------------------------
+    document.getElementById("searchInput").addEventListener("input", e=>{
+      state.q = e.target.value; renderProducts();
+    });
+    document.getElementById("categorySelect").addEventListener("change", e=>{
+      state.category = e.target.value; renderProducts();
+    });
+    document.querySelectorAll(".chip").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const val = btn.dataset.chip;
+        if(!val){ state.chip = null; }
+        else { 
+          // toggle
+          state.chip = (state.chip===val) ? null : val;
+        }
+        document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        if(state.chip){
+          document.querySelector(`.chip[data-chip="${state.chip}"]`)?.classList.add("active");
+        }
+        renderProducts();
+      });
+    });
+    document.getElementById("clearFilters").addEventListener("click", ()=>{
+      state.q=""; state.category="all"; state.chip=null;
+      document.getElementById("searchInput").value="";
+      document.getElementById("categorySelect").value="all";
+      document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      renderProducts();
+    });
+
+    // ----------------------------
+    // Drawer controls
+    // ----------------------------
+    document.getElementById("openCart").addEventListener("click", ()=>{ renderCart(); openCart(); });
+    document.getElementById("closeCart").addEventListener("click", closeCart);
+    document.getElementById("clearCart").addEventListener("click", clearCart);
+
+    // ----------------------------
+    // Checkout (placeholder)
+    // ----------------------------
+    document.getElementById("checkoutBtn").addEventListener("click", ()=>{
+      const total = cartTotal();
+      if(total===0){ alert("Your cart is empty."); return; }
+      alert("Checkout placeholder — integrate Stripe/Razorpay later. Total: " + fmtINR(total));
+    });
+
+    // ----------------------------
+    // Theme toggle (dark only demo)
+    // ----------------------------
+    document.getElementById("toggleTheme").addEventListener("click", ()=>{
+      // Quick accent flip
+      const r = document.documentElement.style;
+      const a = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();
+      const b = getComputedStyle(document.documentElement).getPropertyValue('--brand-2').trim();
+      r.setProperty('--brand', b); r.setProperty('--brand-2', a);
+    });
+
+    // ----------------------------
+    // View item (simple alert)
+    // ----------------------------
+    function viewItem(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      alert(`${p.name}\n${fmtINR(p.price)}\nCategory: ${p.category}\nColor: ${p.color}`);
+    }
+
+    // ----------------------------
+    // Init
+    // ----------------------------
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
+
