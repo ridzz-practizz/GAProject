@@ -265,8 +265,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     const fmtINR = v => "₹" + v.toLocaleString("en-IN");
+    
+   // ----------------------------
+// GA4 – Filter Tracking 
+// ------------------------------   
+    function trackFilterUsage(filterName) {
+  gtag("event", "product_filter_used", {
+    product_filter_type: filterName
+  });
+}
+
 // ----------------------------
-// GA4 – Customer Segment (STEP 1)
+// GA4 – Customer Segment 
 // ----------------------------
     
     (function setCustomerSegment() {
@@ -411,6 +421,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     document.querySelectorAll(".chip").forEach(btn=>{
       btn.addEventListener("click", ()=>{
         const val = btn.dataset.chip;
+
+        if (val) {
+          trackFilterUsage(val); // GA4 tracking
+        }
+        
         if(!val){ state.chip = null; }
         else { 
           // toggle
@@ -474,6 +489,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
