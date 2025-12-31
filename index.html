@@ -265,6 +265,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     const fmtINR = v => "₹" + v.toLocaleString("en-IN");
+
+    // ----------------------------
+// GA4 – Preferred Category 
+// ----------------------------
+    function updatePreferredCategory(category) {
+  let counts = JSON.parse(localStorage.getItem("category_counts")) || {};
+
+  counts[category] = (counts[category] || 0) + 1;
+  localStorage.setItem("category_counts", JSON.stringify(counts));
+
+  let preferred = Object.keys(counts).reduce((a, b) =>
+    counts[a] > counts[b] ? a : b
+  );
+
+  gtag("set", "user_properties", {
+    preferred_category: preferred
+  });
+}
     
    // ----------------------------
 // GA4 – Filter Tracking 
@@ -334,6 +352,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // Cart logic
     // ----------------------------
     function addToCart(id){
+      const product = PRODUCTS.find(p => p.id === id);
+      updatePreferredCategory(product.category);
       state.cart[id] = (state.cart[id]||0) + 1;
       persistCart();
       renderCart();
@@ -478,6 +498,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ----------------------------
     function viewItem(id){
       const p = PRODUCTS.find(x=>x.id===id);
+
+      // STEP 3 GA4 tracking
+      updatePreferredCategory(p.category);
+
+      gtag("event", "view_item", {
+        item_name: p.name,
+        item_category: p.category,
+        price: p.price
+      });
       alert(`${p.name}\n${fmtINR(p.price)}\nCategory: ${p.category}\nColor: ${p.color}`);
     }
 
@@ -489,6 +518,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
