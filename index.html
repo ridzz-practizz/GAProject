@@ -289,7 +289,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // ------------------------------   
     function trackFilterUsage(filterName) {
   gtag("event", "product_filter_used", {
-    product_filter_type: filterName
+    product_filter_type: filterName,
+    filter_usage_count: 1
   });
 }
 
@@ -353,6 +354,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ----------------------------
     function addToCart(id){
       const product = PRODUCTS.find(p => p.id === id);
+
+      gtag("event", "add_to_cart", {
+    item_id: product.id,
+    item_category: product.category,
+    cart_value: product.price,
+    currency: "INR"
+  });
       updatePreferredCategory(product.category);
       state.cart[id] = (state.cart[id]||0) + 1;
       persistCart();
@@ -518,6 +526,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
