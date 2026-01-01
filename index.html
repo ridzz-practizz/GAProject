@@ -270,19 +270,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // GA4 – Preferred Category 
 // ----------------------------
     function updatePreferredCategory(category) {
+  // 1️⃣ Get stored category counts
   let counts = JSON.parse(localStorage.getItem("category_counts")) || {};
 
+  // 2️⃣ Increment count for this category
   counts[category] = (counts[category] || 0) + 1;
+
+  // 3️⃣ Save updated counts
   localStorage.setItem("category_counts", JSON.stringify(counts));
 
+  // 4️⃣ Find the most interacted category
   let preferred = Object.keys(counts).reduce((a, b) =>
     counts[a] > counts[b] ? a : b
   );
 
+  // 5️⃣ Send to GA4 as USER PROPERTY
   gtag("set", "user_properties", {
     preferred_category: preferred
   });
+
+  // (Optional debug)
+  console.log("Preferred category set to:", preferred);
 }
+
     
    // ----------------------------
 // GA4 – Filter Tracking 
@@ -531,6 +541,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
