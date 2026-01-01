@@ -462,6 +462,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         else { 
           // toggle
           state.chip = (state.chip===val) ? null : val;
+          trackFilterUsage(val);
         }
         document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
         if(state.chip){
@@ -530,6 +531,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
