@@ -288,7 +288,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // GA4 – Filter Tracking 
 // ------------------------------   
     function trackFilterUsage(filterName) {
-  gtag("event", "product_filter_used", {
+      
+  console.log("SENDING TO GA4:", filterName);
+  gtag("event", "product_filter_used", {  
     product_filter_type: filterName,
     filter_usage_count: 1
   });
@@ -528,6 +530,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
 </body>
 </html>
+
 
 
 
